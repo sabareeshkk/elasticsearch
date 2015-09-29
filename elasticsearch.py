@@ -2,24 +2,47 @@ import urllib
 import requests
 import json
 
+from serializers import NoteSerializer
+
 
 class ElasticSearch():
-    def __init__(self):
-        self.base_url = 'http://localhost:9200/'
+    base_url = 'http://localhost:9200/'
 
-    def put_data(self, url, data):
+    def post(self, url, data):
         url = self.base_url + url
+        slz = NoteSerializer(data).data
+        result = requests.post(url, data=json.dumps(slz))
+        return result
+
+    def put(self, url, data):
+        url = self.base_url + url
+        data = NoteSerializer(data).data
         result = requests.put(url, data=json.dumps(data))
         return result
 
-    def get_data(self, url, data):
-        url = self.base_url + url + '_search?q=' + urllib.urlencode(data)
+    # query string search
+    def search_uri(self, url, data):
+        url = self.base_url + url + '_search?q=' + \
+            urllib.urlencode(data).replace('=', ':')
         result = requests.get(url)
         return result
 
-    def search_data(self, url, query):
+    # body params search
+    def search_body(self, url, query):
         url = self.base_url + url + '_search/'
-        result = requests.get(url, data=urllib.urlencode(query))   
+        result = requests.get(url, data=json.dumps(query))
+        print result.json()
+        return result
+
+    def delete(self, url):
+        url = self.base_url + url
+        result = requests.delete(url)
+        return result
+
+    def update(self, url, data):
+        url = self.base_url + url + '_update'
+        data = {'doc': data}
+        result = requests.post(url, data=json.dumps(data))
         return result
 
 

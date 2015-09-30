@@ -1,7 +1,8 @@
 import urllib
 import requests
 import json
-
+import pprint
+#used with django serializer of the required model
 from serializers import NoteSerializer
 
 
@@ -10,6 +11,7 @@ class ElasticSearch():
 
     def post(self, url, data):
         url = self.base_url + url
+        #serialize data with django serializer 
         slz = NoteSerializer(data).data
         result = requests.post(url, data=json.dumps(slz))
         return result
@@ -31,7 +33,8 @@ class ElasticSearch():
     def search_body(self, url, query):
         url = self.base_url + url + '_search/'
         result = requests.get(url, data=json.dumps(query))
-        print result.json()
+        #pretty printing the resulted output of the query exeuted 
+        pprint.pprint(result.json())
         return result
 
     def delete(self, url):

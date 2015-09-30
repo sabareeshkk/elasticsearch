@@ -8,6 +8,11 @@ from serializers import NoteSerializer
 
 class ElasticSearch():
     base_url = 'http://localhost:9200/'
+   
+    def mappings(self, index_url, schema):
+        url = self.base_url + index_url
+        result = requests.put(url, data=json.dumps(schema))
+        return result
 
     def post(self, url, data):
         url = self.base_url + url
